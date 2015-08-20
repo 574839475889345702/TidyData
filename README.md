@@ -8,16 +8,16 @@ https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Datas
 
 Unzip the file into the same directory as 'run_analysis.R'. Its default name will be "UCI HAR Dataset" but can be changed.  The required files needed for execution are:
 
-  activity_labels.txt  
-  features.txt  
-  |- test  
-     |- subject_test.txt  
-     |- X_test.txt  
-     |- Y_test.txt  
-  |- train  
-     |- subject_train.txt  
-     |- X_train.txt  
-     |- Y_train.txt  
+&nbsp;&nbsp;activity_labels.txt  
+&nbsp;&nbsp;features.txt  
+&nbsp;&nbsp;|- test  
+&nbsp;&nbsp;&nbsp;&nbsp;|- subject_test.txt  
+&nbsp;&nbsp;&nbsp;&nbsp;|- X_test.txt  
+&nbsp;&nbsp;&nbsp;&nbsp;|- Y_test.txt  
+&nbsp;&nbsp;|- train  
+&nbsp;&nbsp;&nbsp;&nbsp;|- subject_train.txt  
+&nbsp;&nbsp;&nbsp;&nbsp;|- X_train.txt  
+&nbsp;&nbsp;&nbsp;&nbsp;|- Y_train.txt  
 
 ## Running the Script
 
