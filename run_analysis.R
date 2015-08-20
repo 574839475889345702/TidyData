@@ -1,61 +1,42 @@
-cleanActivityData <- function()
+aggregateActivityData <- function()
 {
- 
-  ActivityType <- read.table("UCI HAR Dataset/activity_labels.txt")
-  ActivityType <- ActivityType$V2
+  ## get activity types
+  ActivityType <- read.table("UCI HAR Dataset/activity_labels.txt")$V2
   
-  features <- read.table("UCI HAR Dataset/features.txt")
+  ## get list of data observations types
+  features <- read.table("UCI HAR Dataset/features.txt")$V2
   
-  index <- sort( c( grep("mean()", features$V2, value = FALSE,fixed = TRUE),
-                    grep("std()" , features$V2, value = FALSE,fixed = TRUE) ) )
-   
-  Subject  <- read.table("UCI HAR Dataset/test/subject_test.txt")
-  Activity <- read.table("UCI HAR Dataset/test/Y_test.txt")
-  Data     <- read.table("UCI HAR Dataset/test/X_test.txt")
+  ## find the features corresponding to mean and standard deviation
+  index <- sort( c( grep("mean()", features, value = FALSE,fixed = TRUE),
+                    grep("std()" , features, value = FALSE,fixed = TRUE) ) )
   
-  Subject  <- Subject$V1
-  Activity <- Activity$V1
-  Activity <- factor(Activity,labels=as.character(ActivityType) )
-  Data <- Data[index]
+  ## load test data
+  df.test  <<- cbind( read.table("UCI HAR Dataset/test/subject_test.txt")$V1,
+                      factor(read.table("UCI HAR Dataset/test/Y_test.txt")$V1,labels=ActivityType),
+                      read.table("UCI HAR Dataset/test/X_test.txt")[index]
+  )
+  names(df.test) <- c("subjectID", "activity", as.character( features[index]))
   
-  df.test <- cbind(Subject,Activity,Data) 
-    
-  Subject  <- read.table("UCI HAR Dataset/train/subject_train.txt")
-  Activity <- read.table("UCI HAR Dataset/train/Y_train.txt")
-  Data     <- read.table("UCI HAR Dataset/train/X_train.txt")
+  ## load training data
+  df.train <<- cbind( read.table("UCI HAR Dataset/train/subject_train.txt")$V1,
+                      factor(read.table("UCI HAR Dataset/train/Y_train.txt")$V1,labels=ActivityType),
+                      read.table("UCI HAR Dataset/train/X_train.txt")[index]
+  )
+  names(df.train) <- c("subjectID", "activity", as.character( features[index]))
   
-  Subject  <- Subject$V1
-  Activity <- Activity$V1
-  Activity <- factor(Activity,labels=ActivityType )
-  Data <- Data[index]
-  
-  df.train <- cbind(Subject,Activity,Data)  
-  
+  ## combine data sets
   data <- rbind(df.test,df.train)
-  data <- data[ order(data[,1],data[,2]) , ]
-  names(data) <- c("subjectID", "activity", as.character( features$V2[index]))
-  row.names(data) <- NULL
   
-  #return(data)
-  
-  tinydata <- read.table(text = "", col.names=names(data)) # create empty data.frame
-  
-  for(i in unique(data$subjectID))
-  {
-    subdata <- data[with(data,subjectID==i),]
-    
-    for(j in as.integer(unique(subdata$activity)))
-    {
-      subsubdata <- subdata[with(subdata,activity==ActivityType[j]),]
-      subsubdata[1,3:68] <- colMeans(subsubdata[,3:68])
-      
-      tinydata <- rbind(tinydata,subsubdata[1,])
-      
-    }
-  }
-  
+  ## find mean for each subject and activity
+  tinydata <- aggregate(x=rawdata[,3:68], by=list(subjectID = rawdata$subjectID,
+                                                  activity = rawdata$activity), FUN="mean")
+  tinydata <- tinydata[ order(tinydata[,1],tinydata[,2]) , ]
   row.names(tinydata) <- NULL
+  
+  ## output to file
   write.table(tinydata, file = "TinyTidyData.txt", row.name=FALSE)
+  
+  ## return data.frame
   return(tinydata)
   
 }
