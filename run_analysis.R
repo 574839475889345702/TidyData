@@ -1,6 +1,6 @@
 aggregateActivityData <- function()
 {
-  ## get activity types
+  ## get activity types, automatically converted to factors
   ActivityType <- read.table("UCI HAR Dataset/activity_labels.txt")$V2
   
   ## get list of data observations types
@@ -14,22 +14,22 @@ aggregateActivityData <- function()
   df.test  <<- cbind( read.table("UCI HAR Dataset/test/subject_test.txt")$V1,
                       factor(read.table("UCI HAR Dataset/test/Y_test.txt")$V1,labels=ActivityType),
                       read.table("UCI HAR Dataset/test/X_test.txt")[index]
-  )
-  names(df.test) <- c("subjectID", "activity", as.character( features[index]))
+                    )
+  names(df.test) <- c("subjectID", "activity", as.character( features[index]) )
   
   ## load training data
   df.train <<- cbind( read.table("UCI HAR Dataset/train/subject_train.txt")$V1,
                       factor(read.table("UCI HAR Dataset/train/Y_train.txt")$V1,labels=ActivityType),
                       read.table("UCI HAR Dataset/train/X_train.txt")[index]
-  )
-  names(df.train) <- c("subjectID", "activity", as.character( features[index]))
+                    )
+  names(df.train) <- c("subjectID", "activity", as.character( features[index]) )
   
   ## combine data sets
   data <- rbind(df.test,df.train)
   
   ## find mean for each subject and activity
   tinydata <- aggregate(x=rawdata[,3:68], by=list(subjectID = rawdata$subjectID,
-                                                  activity = rawdata$activity), FUN="mean")
+                                                  activity  = rawdata$activity), FUN="mean")
   tinydata <- tinydata[ order(tinydata[,1],tinydata[,2]) , ]
   row.names(tinydata) <- NULL
   
